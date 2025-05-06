@@ -10,10 +10,15 @@ st.set_page_config(page_title="Chronomood", layout="wide")
 # Load dataset
 @st.cache_data
 def load_data():
-    df = pd.read_csv("sample_data/sample_combined.csv", parse_dates=['datetime'])
+    df = pd.read_csv("data/combined.csv", parse_dates=['datetime'])
     return df
+df = load_data()  # Load first
 
-df = load_data()
+# Then map sentiment score
+sentiment_map = {'positive': 1, 'neutral': 0.5, 'negative': 0}
+df['sentiment_score'] = df['sentiment'].map(sentiment_map)
+
+# Continue with feature extraction
 df['hour'] = df['datetime'].dt.hour
 df['day'] = df['datetime'].dt.day_name()
 
@@ -41,7 +46,7 @@ text = " ".join(filtered[filtered['sentiment'] == sentiment]['text'].astype(str)
 
 if text:
     wc = WordCloud(width=800, height=300, background_color="white").generate(text)
-    st.image(wc.to_array(), use_column_width=True)
+    st.image(wc.to_array(), use_container_width=True)
 else:
     st.warning("No tweets found for this selection.")
 
@@ -53,3 +58,29 @@ if user_input:
     score = analyzer.polarity_scores(user_input)['compound']
     mood = "positive" if score >= 0.05 else "negative" if score <= -0.05 else "neutral"
     st.info(f"Predicted Mood: **{mood.upper()}** (score: {score:.2f})")
+
+# --- Additional Visualizations ---
+st.subheader("📈 Average Sentiment by Hour")
+
+# Group data by hour and compute average sentiment
+hourly_sentiment = df.groupby('hour')['sentiment_score'].mean().reset_index()
+
+fig1, ax1 = plt.subplots()
+ax1.plot(hourly_sentiment['hour'], hourly_sentiment['sentiment_score'], marker='o')
+ax1.set_title("Average Tweet Sentiment by Hour of Day")
+ax1.set_xlabel("Hour (0 = Midnight)")
+ax1.set_ylabel("Average Sentiment (1 = Positive, 0 = Negative)")
+ax1.grid(True)
+
+st.pyplot(fig1)
+
+st.subheader("📊 Tweet Volume by Hour and Sentiment")
+
+volume_df = df.groupby(['hour', 'sentiment']).size().unstack(fill_value=0)
+
+fig2, ax2 = plt.subplots()
+volume_df.plot(kind='bar', stacked=True, ax=ax2, colormap='coolwarm')
+ax2.set_title("Tweet Volume by Hour and Sentiment")
+ax2.set_xlabel("Hour of Day")
+ax2.set_ylabel("Number of Tweets")
+st.pyplot(fig2)
