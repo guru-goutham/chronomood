@@ -1,5 +1,7 @@
 # 🧠 Chronomood: Tracking Emotional Patterns by Time
 
+✅ Live App Link: 🚀 [Live Demo](https://chronomood-guru-goutham.streamlit.app)
+
 Chronomood is a data science project that analyzes Twitter sentiment over time to reveal how moods shift throughout the day and across the week. Using natural language processing (NLP) and interactive visualizations, it helps answer:  
 > *"Are we really moodier on Mondays?"*  
 > *"Do people get happier after midnight?"*
@@ -11,6 +13,8 @@ Chronomood is a data science project that analyzes Twitter sentiment over time t
 - 🌈 Heatmaps, line charts, and word clouds
 - 🧪 Real-time sentiment tester for your own tweets
 - 💬 Streamlit-powered UI for full interactivity
+
+![App Screenshot](./image.png)
 
 ## 📂 Project Structure
 
@@ -50,13 +54,7 @@ pip install -r requirements.txt
 streamlit run chronomood.py
 
 👨‍💻 Built With
-Python
-
-Pandas, Seaborn, Matplotlib
-
-NLTK (VADER)
-
-Streamlit
+- Python • Streamlit • pandas • matplotlib • Seaborn • VADER Sentiment
 
 📚 Use Cases
 Academic: Temporal mood analysis from social media
