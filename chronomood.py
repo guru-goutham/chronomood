@@ -32,6 +32,7 @@ hour = st.sidebar.slider("Hour of Day", 0, 23)
 
 # --- Filtered subset ---
 filtered = df[(df['day'] == day) & (df['hour'] == hour)]
+day_filtered = df[df['day'] == day]
 
 # --- Sentiment Distribution ---
 st.subheader(f"📊 Sentiment Distribution at {hour}:00 on {day}")
@@ -63,31 +64,31 @@ if user_input:
     mood = "positive" if score >= 0.05 else "negative" if score <= -0.05 else "neutral"
     st.info(f"Predicted Mood: **{mood.upper()}** (score: {score:.2f})")
 
-# --- Average Sentiment by Hour ---
-st.subheader("📈 Average Sentiment by Hour")
-hourly_sentiment = df.groupby('hour')['sentiment_score'].mean().reset_index()
+# --- Average Sentiment by Hour (Filtered by Day) ---
+st.subheader(f"📈 Average Sentiment by Hour on {day}")
+hourly_sentiment = day_filtered.groupby('hour')['sentiment_score'].mean().reset_index()
 
 if not hourly_sentiment.empty:
     fig1, ax1 = plt.subplots()
     ax1.plot(hourly_sentiment['hour'], hourly_sentiment['sentiment_score'], marker='o')
-    ax1.set_title("Average Tweet Sentiment by Hour of Day")
-    ax1.set_xlabel("Hour (0 = Midnight)")
+    ax1.set_title(f"Average Sentiment on {day}")
+    ax1.set_xlabel("Hour of Day")
     ax1.set_ylabel("Avg Sentiment (1 = 😊, 0 = 😠)")
     ax1.grid(True)
     st.pyplot(fig1)
 else:
-    st.warning("No data available for hourly sentiment.")
+    st.warning("No sentiment data for this day.")
 
-# --- Tweet Volume by Hour and Sentiment ---
-st.subheader("📊 Tweet Volume by Hour and Sentiment")
-volume_df = df.groupby(['hour', 'sentiment']).size().unstack(fill_value=0)
+# --- Tweet Volume by Hour and Sentiment (Filtered by Day) ---
+st.subheader(f"📊 Tweet Volume by Hour and Sentiment on {day}")
+volume_df = day_filtered.groupby(['hour', 'sentiment']).size().unstack(fill_value=0)
 
 if not volume_df.empty:
     fig2, ax2 = plt.subplots()
     volume_df.plot(kind='bar', stacked=True, ax=ax2, colormap='coolwarm')
-    ax2.set_title("Tweet Volume by Hour and Sentiment")
+    ax2.set_title(f"Tweet Volume on {day}")
     ax2.set_xlabel("Hour of Day")
     ax2.set_ylabel("Number of Tweets")
     st.pyplot(fig2)
 else:
-    st.warning("No tweet volume data to display.")
+    st.warning("No tweet volume data to display for this day.")
