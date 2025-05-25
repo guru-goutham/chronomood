@@ -10,7 +10,7 @@ st.set_page_config(page_title="Chronomood", layout="wide")
 # --- Load dataset ---
 @st.cache_data
 def load_data():
-    df = pd.read_csv("data/combined.csv", parse_dates=['datetime'])
+    df = pd.read_csv("data/sample_combined.csv", parse_dates=['datetime'])
     return df
 
 df = load_data()
